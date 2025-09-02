@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-Wall -g
 
 
-BINS=forktest rawhelloarm hello
+BINS=forktest rawhelloarm hello exec1 exec2 exec3 exec4 popen
 
 
 all: $(BINS)

@@ -2,7 +2,7 @@
 CC=clang
 CFLAGS=-Wall -g
 
-BINS=mystery mystery2 mystery3 mystery4 
+BINS=mystery mystery2 mystery3 mystery4 shim.so shimtest
 
 
 all: $(BINS)
