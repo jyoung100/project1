@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
 
         //do something that will result in a system call
-        //child = getpid();
+        child = getpid();
         clock_t c = clock();
         write(STDOUT_FILENO, "Hello. I'm childish.\n",21);
         printf("time = %ld\n",c);
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
                 printf("It's an entry! (%d)\n", syscall_num);
                 break;
             case PTRACE_SYSCALL_INFO_EXIT:
-                printf("It's an entry! (%d)\n", syscall_num);
+                printf("It's an exit! (%d)\n", syscall_num);
                 break;
         
             default:
