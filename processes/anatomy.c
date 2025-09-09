@@ -14,15 +14,21 @@ int uy;
 int main(int argc, char **argv)
 {
 	int x = 12;
-
-	//moves environ
-	setenv("PATH","STUFF",0);
 	
 	int *px = malloc(sizeof(int));
 	whereis("main", main);
 	whereis("&y", &y);
 	whereis("&x", &x);
 	whereis("px", px);
+	whereis("&argc", &argc);
+	whereis("argv", argv);
+	
+	whereis("environ (before)",environ);
+	//moves environ
+	setenv("PATH","STUFF",0);
+	setenv("ANOTHERTESTVARIABLE","STUFF",1);
+	whereis("environ",environ);
+
 	
 	return EXIT_SUCCESS;	
 }
