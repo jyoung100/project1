@@ -7,7 +7,6 @@
 
 #define max_allocations 10000
 
-
 void *(*original_malloc) (size_t size) = NULL;
 void *(*original_calloc) (size_t, size_t) = NULL;
 void (*original_free) (void* ptr);
@@ -27,7 +26,13 @@ allocations table[max_allocations];
 
 int insert(void *p, size_t size){
 	for(int i = 0; i < max_allocations; i++){
-		if(table[i].ptr == p) {table[i].size = size; return 1;}
+		if(table[i].ptr == p) {
+			size_t prev_size = table[i].size;
+			table[i].size = size;
+			if(size >= prev_size){bytes+=(size-prev_size);}
+			else{bytes-=(prev_size - size);}
+			return 1;
+		}
 	}
 
 	for(int i = 0; i < max_allocations; i++){
@@ -49,7 +54,6 @@ for(int i = 0; i < max_allocations; i++){
 		--leakcount;
 		return 1;
 	}
-
 }
 }
 
@@ -61,14 +65,7 @@ void __attribute__((destructor)) library_cleanup() {
 			dprintf(STDERR_FILENO, "Leak\t%zu\n", table[j].size);
 		}
 	}
-	dprintf(STDERR_FILENO, "Total %zu %zu\n", (size_t)leakcount, (size_t)bytes);
-
-/*	for(int j = 0; j < max_allocations; j++){
-		if(table[j].ptr != NULL){
-			printf("Leak\t%ld\n", table[j].size);
-		}}
-	printf("Total %d %d\n", leakcount, bytes-1024);
-*/
+	dprintf(STDERR_FILENO, "Total %zu\t%zu\n", (size_t)leakcount, (size_t)bytes);
 }
 
 void *malloc(size_t size){
@@ -98,15 +95,35 @@ void *calloc(size_t count, size_t size){
 void free(void *ptr){
    original_free = dlsym(RTLD_NEXT, "free");
    delete(ptr);
-   --leakcount;
+   original_free(ptr);
    return;
    }
 
 void *realloc(void *ptr, size_t size){
 	original_realloc = dlsym(RTLD_NEXT, "realloc");
-	//delete(ptr);
-	insert(ptr, size);
-	return;
+	size_t old = 0;
+	int check_early_allocation = -1;
+	if(ptr){
+		for(int i = 0; i < max_allocations; i++){
+			if(table[i].ptr == ptr){
+				check_early_allocation = i;
+				old = table[i].size;
+				break;
+			}
+			if(check_early_allocation != -1){
+				delete(ptr);
+			}
+		}
+	}
+
+	void *new_ptr = original_realloc(ptr, size);
+	if(new_ptr){
+	insert(new_ptr, size);
+	}
+	else{
+		insert(ptr, old);
+	}
+	return new_ptr;
 }
 
 
