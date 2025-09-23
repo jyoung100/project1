@@ -2,8 +2,6 @@
 //determine which system calls are being made by the child
 //process. Note, this example, only catches the first system
 //call.
-
-
 #include <sys/ptrace.h>
 #include <linux/ptrace.h>
 
@@ -41,6 +39,7 @@ int main(int argc, char **argv) {
 
         //do something that will result in a system call
         child = getpid();
+        printf("feast\n");
         clock_t c = clock();
         write(STDOUT_FILENO, "Hello. I'm childish.\n",21);
         printf("time = %ld\n",c);

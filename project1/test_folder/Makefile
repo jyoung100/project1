@@ -2,16 +2,10 @@
 CC=gcc
 CFLAGS=-Wall -g
 
-BINS=mem_shim.so leakcount sctracer tractest test1
+BINS= mem_shim.so leakcount  
 
 
 all: $(BINS)
-
-leakcount: leakcount.c
-	$(CC) $(CFLAGS) -o leakcount leakcount.c
-
-sctracer: sctracer.c
-	$(CC) $(CFLAGS) -o sctracer sctracer.c
 
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $?
