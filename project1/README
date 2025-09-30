@@ -1,0 +1,18 @@
+Jack Young
+CPSC 3220
+Dr. Sorber
+9/23/2025
+
+Part 1: Memory Leak Detector
+Design
+This program uses a shim to intercept library calls and track memory allocation leaks within a target program.Within leakcount.c, it sets the envrionment variable LD_PRELOAD to the mem_shim.c file which contains the redefined malloc, calloc, realloc, and free functions. The shim tracks memory leaks using an array of structs that contain information about each leak(bytes, pointer to memory). The program then outputs the array of leaks to stderr using dprintf within a destructor.
+Known Problems:
+For the first section in each test from the autograder, I get an ERROR saying something isn't quite right. It would see that these issues are all related to the same thing, but I'm not sure what
+There is a max number of allocations allowed before the array runs out of space to hold their information, Used static memory allocation to not interfere with malloc calls
+
+Part2:
+Design
+This program traces a child processes system calls using ptrace. Within sctracer.c, it forks to create a child process and then uses expword to tokenize the target program on the command line along with its arguments. It traces the child process and waits for its first system call. It uses bit 0x80 to ensure that it is a system call, and then uses PEEKUSER to get the number of the system call. It updates the system call counter(part of each struct element in the array) for the system call that was called. Then it writes all system calls to the specified output file. 
+Known Problems:
+I used a magic number for my array of system calls, but in this case I think it's fine since there aren't more than 500 system call numbers.
+

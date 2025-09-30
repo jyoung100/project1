@@ -1,21 +1,11 @@
-#define _GNU_SOURCE
-#include <stddef.h>
-#include <dlfcn.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main(int argc, char **argv){
+int main(int agrc, char **argv){
 
+	printf("Child");
+	void *j = malloc(*argv[1]);
 
-    void *p =  malloc(10);
-    void *g = malloc(100);
-    void *x = realloc(p, 123);
-
-    free(x);
-
-    free(NULL);
-
-    return 0;
-    
+	return 0;
 }

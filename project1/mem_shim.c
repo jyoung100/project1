@@ -77,7 +77,7 @@ void __attribute__((destructor)) library_cleanup() {
 			dprintf(STDERR_FILENO, "Leak\t%zu\n", table[j].size);
 		}
 	}
-	dprintf(STDERR_FILENO, "Total %zu\t%zu\n", (size_t)leakcount, (size_t)bytes);
+	dprintf(STDERR_FILENO, "TOTAL\t%zu\t%zu\n", (size_t)leakcount, (size_t)bytes);
 }
 
 void *malloc(size_t size){

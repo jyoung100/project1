@@ -19,9 +19,6 @@ typedef struct {
     int countr;
 } call;
 
-//create array of system calls
-call calls[500];
-
 int main(int argc, char **argv) {
 
     //create child process
@@ -30,6 +27,8 @@ int main(int argc, char **argv) {
         perror("fork");
         return 1;
     }
+    //create array to hold systems calls
+    call calls[10000];
     //count of system calls
     int count = 0;
 
@@ -55,10 +54,11 @@ int main(int argc, char **argv) {
         waitpid(child, &status, 0);
         //stop at first system call
         ptrace(PTRACE_SETOPTIONS, child, 0, PTRACE_O_TRACESYSGOOD);
-        //initialize array of structs call numbers
- 
-        for (int i = 0; i < 500; i++) {
-            calls[i].call_num = i;
+        //create mapping for system calls
+        enum {SYSMAP_SIZE = 3000};
+        int sys_index[SYSMAP_SIZE];
+        for (int i = 0; i < SYSMAP_SIZE; i++) {
+            sys_index[i] = -1;
         }
         //create a boolean to determine if the call is on entry
         bool on_entry = false; 
@@ -76,17 +76,20 @@ int main(int argc, char **argv) {
             if (WIFSTOPPED(status) && (WSTOPSIG(status) & 0x80)) {
                 //flip the boolean
                 on_entry = !on_entry;
+                
                 if (on_entry) {
                     //grab the system call number
-
                     long sc = ptrace(PTRACE_PEEKUSER, child, sizeof(long) * ORIG_RAX, NULL);
-                    
-		    //update the array of call structs
-                    for(int i = 0; i < 500; i++){
-                        if(((int)sc) == calls[i].call_num){
-                            calls[i].countr++;
-                            count++;
-                        }
+
+                    //update mapping
+                    int idx = sys_index[sc];
+                    if (idx >= 0) {
+                        calls[idx].countr += 1;
+                    } else {
+                        calls[count].call_num = (int)sc;
+                        calls[count].countr = 1;
+                        sys_index[sc] = count;
+                        count++;
                     }
                 }
             }
@@ -107,10 +110,9 @@ int main(int argc, char **argv) {
         FILE *out = fopen(argv[2], "w");
 
         //write all system calls
-        for (int i = 0; i < 500; i++) {
-            if(calls[i].countr != 0){
+        for (int i = 0; i < count; i++) {
             fprintf(out, "%d\t%d\n", calls[i].call_num, calls[i].countr);
-        }}
+        }
         fclose(out);
     }
 

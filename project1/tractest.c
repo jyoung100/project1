@@ -9,15 +9,11 @@
 int main(int argc, char **argv, char **envp)
 {
 
-	//printf("Child Process ran me\n");
-	
-	//printf("Argv[1]: %s\n", argv[1]);
-
 	clock_t c = clock();
 
 	printf("Time: %ld\n", c);
 
-
+	printf("Arg[1]: %d\n", *argv[1]);
 	
 	return 0;
 }

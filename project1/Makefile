@@ -2,7 +2,7 @@
 CC=gcc
 CFLAGS=-Wall -g
 
-BINS=mem_shim.so leakcount sctracer tractest test1
+BINS=mem_shim.so leakcount sctracer 
 
 
 all: $(BINS)
